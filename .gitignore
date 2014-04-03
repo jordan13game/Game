@@ -29,3 +29,10 @@ _ReSharper*/
 $tf*/
 *.sdf
 *.opensdf
+proj.blackberry/*
+proj.ios/*
+proj.linux/*
+proj.mac/*
+proj.marmalade/*
+proj.winrt/*
+proj.wp8/*
