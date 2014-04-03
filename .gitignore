@@ -36,3 +36,4 @@ proj.mac/*
 proj.marmalade/*
 proj.winrt/*
 proj.wp8/*
+proj.win32/ipch/*
