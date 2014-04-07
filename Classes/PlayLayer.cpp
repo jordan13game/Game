@@ -30,17 +30,18 @@ bool PlayLayer::init()
 		for (int j = 0; j < GRID_HEIGHT ; j++)
 		{
 			Box * box = Box::create();  
+			box->x = i;
+			box->y = j;
 			row->addObject(box);
 		}
 
 	}
-	
+	this->setTouchEnabled(true);
 	repair();
     return true;
 }
 
-const char* PlayLayer::BOX_NAME[9] = {"bubble_0.png","bubble_1.png","bubble_2.png","bubble_3.png","bubble_4.png"
-										,"bubble_5.png","bubble_6.png","bubble_7.png","bubble_8.png"};
+
 
 bool PlayLayer::checkBox()
 {
@@ -109,7 +110,8 @@ int PlayLayer::repairSingleCol( int col )
 		this->addChild(pSprite);
 		pSprite->setPosition(ccp(GRID_LEFT + (0.5 + col) * BOXSIZE , GRID_BUTTON + (GRID_HEIGHT + 0.5 + i) * BOXSIZE));
 		pSprite->runAction(CCMoveBy::create(BOXMOVETIME * num , ccp(0, -num * BOXSIZE)));
-
+		//pSprite->runAction(CCSequence::createWithTwoActions(CCMoveBy::create(BOXMOVETIME * num , ccp(0, -num * BOXSIZE)),
+		//	CCCallFunc::create(this,callfunc_selector(tmp->check))));
 	}
 
 	return num;
@@ -141,4 +143,90 @@ Box * PlayLayer::getBoxAtPosXY( int x,int y )
 	return (Box *)((CCArray *)m_content->objectAtIndex(x))->objectAtIndex(y);
 }
 
-const float PlayLayer::BOXMOVETIME = 0.05f;
+bool PlayLayer::ccTouchBegan( CCTouch *pTouch, CCEvent *pEvent )
+{
+	int x = (pTouch->getLocation().x - GRID_LEFT) / BOXSIZE;
+	int y = (pTouch->getLocation().y - GRID_BUTTON) / BOXSIZE;
+
+	m_seteledBox = getBoxAtPosXY(x,y);
+	if (m_seteledBox == boundBox)
+	{
+		m_seteledBox = NULL;
+	}
+	return true;
+}
+
+void PlayLayer::ccTouchMoved( CCTouch *pTouch, CCEvent *pEvent )
+{
+	if (m_seteledBox != NULL)
+	{
+		CCPoint sub = ccpSub(pTouch->getLocation(),m_seteledBox->getP());
+		int dx = sub.x / BOXSIZE, dy = sub.y / BOXSIZE;
+		if (dx || dy)
+		{
+			if (swapTwoBoxes(dx, dy))
+			{
+				removeall();
+				repair();
+			}
+			m_seteledBox = NULL;
+		}
+		
+		
+	}
+}
+
+void PlayLayer::ccTouchEnded( CCTouch *pTouch, CCEvent *pEvent )
+{
+	
+}
+
+void PlayLayer::registerWithTouchDispatcher()
+{
+	CCDirector *pDirector=CCDirector::sharedDirector();  
+	pDirector->getTouchDispatcher()->addTargetedDelegate(this,0,true);  
+}
+
+bool PlayLayer::swapTwoBoxes( int dx,int dy )
+{
+	if (dx < -1) dx = -1;
+	if (dy < -1) dy = -1;
+	if (dx > 1) dx = 1;
+	if (dy > 1) dy = 1;
+	if (dx) dy = 0;
+	Box * otherBox = getBoxAtPosXY(m_seteledBox->x + dx,m_seteledBox->y + dy);
+	if (otherBox == boundBox) return false;
+	m_seteledBox->pSprite->runAction(CCMoveBy::create(BOXSWAPTIME,ccp(BOXSIZE * dx , BOXSIZE * dy)));
+	otherBox->pSprite->runAction(CCMoveBy::create(BOXSWAPTIME,ccp(BOXSIZE * -dx , BOXSIZE * -dy)));
+
+	bool bRet = false;
+	if (m_seteledBox->check(m_seteledBox->x + dx,m_seteledBox->y + dy,(dx?HORIZON:VERTICAL))) bRet = true;
+	if (otherBox->check(m_seteledBox->x,m_seteledBox->y,(dx?HORIZON:VERTICAL))) bRet = true;
+	if (bRet == false)
+	{
+		m_seteledBox->pSprite->runAction(CCSequence::createWithTwoActions(CCDelayTime::create(BOXSWAPTIME*1.5),
+			CCMoveBy::create(BOXSWAPTIME,ccp(BOXSIZE * -dx , BOXSIZE * -dy))));
+		otherBox->pSprite->runAction(CCSequence::createWithTwoActions(CCDelayTime::create(BOXSWAPTIME*1.5),
+			CCMoveBy::create(BOXSWAPTIME,ccp(BOXSIZE * dx , BOXSIZE * dy))));
+	}
+	return bRet;
+}
+
+void PlayLayer::removeall()
+{
+	CCObject *obj;
+	CCARRAY_FOREACH(m_toRemove,obj)
+	{
+		Box *p = (Box *)obj;
+		p->pSprite->runAction(CCSequence::createWithTwoActions(CCScaleTo::create(BOXDISTIME,0,0),
+			CCCallFuncO::create(this,callfuncO_selector(PlayLayer::removeSprite),p)));
+	}
+}
+
+void PlayLayer::removeSprite( CCObject *p )
+{
+	Box *tmp = (Box *)p;
+	this->removeChild(tmp->pSprite,true);
+}
+
+

@@ -1,13 +1,14 @@
 #pragma once
 
 #include "cocos2d.h"
+#include "GameDefine.h"
 using namespace cocos2d;
+
+class PlayLayer;
 
 class Box : public cocos2d::CCNode
 {
-	static const int COMBO_TYPE_NONE	= 0;
-	static const int COMBO_TYPE_ROW		= 1;
-	static const int COMBO_TYPE_COL		= 2;
+	
 protected:
 	
 public:
@@ -20,5 +21,8 @@ public:
 	int x , y;
     // implement the "static node()" method manually
     CREATE_FUNC(Box);
+	void swap(Box *a);
+	CCPoint getP();
+	bool check(int px,int py,int dir);
 };
 
