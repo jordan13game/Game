@@ -37,7 +37,7 @@ bool PlayLayer::init()
 
 	}
 	this->setTouchEnabled(true);
-	repair();
+	judgeAndRepair();
     return true;
 }
 
@@ -64,6 +64,8 @@ PlayLayer::~PlayLayer()
 	boundBox = NULL;
 	m_toRemove->release();
 	m_toRemove = NULL;
+	m_toJudge->release();
+	m_toJudge = NULL;
 }
 
 PlayLayer::PlayLayer()
@@ -76,6 +78,9 @@ PlayLayer::PlayLayer()
 	boundBox->y = -1;
 	m_toRemove = CCArray::create();
 	m_toRemove->retain();
+	m_toJudge = CCArray::create();
+	m_toJudge->retain();
+	islock = false;
 }
 
 int PlayLayer::repairSingleCol( int col )
@@ -96,6 +101,7 @@ int PlayLayer::repairSingleCol( int col )
 			dest->pSprite = tmp->pSprite;
 			dest->_type = tmp->_type;
 			dest->combo_type = tmp->combo_type;
+			m_toJudge->addObject(dest);
 		}
 	}
 
@@ -110,6 +116,7 @@ int PlayLayer::repairSingleCol( int col )
 		this->addChild(pSprite);
 		pSprite->setPosition(ccp(GRID_LEFT + (0.5 + col) * BOXSIZE , GRID_BUTTON + (GRID_HEIGHT + 0.5 + i) * BOXSIZE));
 		pSprite->runAction(CCMoveBy::create(BOXMOVETIME * num , ccp(0, -num * BOXSIZE)));
+		m_toJudge->addObject(tmp);
 		//pSprite->runAction(CCSequence::createWithTwoActions(CCMoveBy::create(BOXMOVETIME * num , ccp(0, -num * BOXSIZE)),
 		//	CCCallFunc::create(this,callfunc_selector(tmp->check))));
 	}
@@ -145,6 +152,8 @@ Box * PlayLayer::getBoxAtPosXY( int x,int y )
 
 bool PlayLayer::ccTouchBegan( CCTouch *pTouch, CCEvent *pEvent )
 {
+	if(islock) return false;
+
 	int x = (pTouch->getLocation().x - GRID_LEFT) / BOXSIZE;
 	int y = (pTouch->getLocation().y - GRID_BUTTON) / BOXSIZE;
 
@@ -166,8 +175,10 @@ void PlayLayer::ccTouchMoved( CCTouch *pTouch, CCEvent *pEvent )
 		{
 			if (swapTwoBoxes(dx, dy))
 			{
+				lock();
 				removeall();
-				repair();
+				this->runAction(CCSequence::createWithTwoActions(CCDelayTime::create(BOXDISTIME*1.5),
+					CCCallFunc::create(this,callfunc_selector(PlayLayer::judgeAndRepair))));
 			}
 			m_seteledBox = NULL;
 		}
@@ -200,10 +211,12 @@ bool PlayLayer::swapTwoBoxes( int dx,int dy )
 	otherBox->pSprite->runAction(CCMoveBy::create(BOXSWAPTIME,ccp(BOXSIZE * -dx , BOXSIZE * -dy)));
 
 	bool bRet = false;
-	if (m_seteledBox->check(m_seteledBox->x + dx,m_seteledBox->y + dy,(dx?HORIZON:VERTICAL))) bRet = true;
-	if (otherBox->check(m_seteledBox->x,m_seteledBox->y,(dx?HORIZON:VERTICAL))) bRet = true;
+	m_seteledBox->swap(otherBox);
+	if (m_seteledBox->check(otherBox,dx?HORIZON:VERTICAL)) bRet = true;
+	if (otherBox->check(m_seteledBox,dx?HORIZON:VERTICAL)) bRet = true;
 	if (bRet == false)
 	{
+		m_seteledBox->swap(otherBox);
 		m_seteledBox->pSprite->runAction(CCSequence::createWithTwoActions(CCDelayTime::create(BOXSWAPTIME*1.5),
 			CCMoveBy::create(BOXSWAPTIME,ccp(BOXSIZE * -dx , BOXSIZE * -dy))));
 		otherBox->pSprite->runAction(CCSequence::createWithTwoActions(CCDelayTime::create(BOXSWAPTIME*1.5),
@@ -221,12 +234,52 @@ void PlayLayer::removeall()
 		p->pSprite->runAction(CCSequence::createWithTwoActions(CCScaleTo::create(BOXDISTIME,0,0),
 			CCCallFuncO::create(this,callfuncO_selector(PlayLayer::removeSprite),p)));
 	}
+	m_toRemove->removeAllObjects();
 }
 
 void PlayLayer::removeSprite( CCObject *p )
 {
 	Box *tmp = (Box *)p;
 	this->removeChild(tmp->pSprite,true);
+	tmp->_type = -1;
 }
+
+void PlayLayer::lock()
+{
+	islock = true;
+}
+
+void PlayLayer::unlock()
+{
+	bool bRet = false;
+	if (m_toJudge->count())
+	{
+		CCObject *p;
+		CCARRAY_FOREACH(m_toJudge,p)
+		{
+			Box *tmp = (Box*)p;
+			if(tmp->check())bRet = true;
+		}
+	}
+	if (bRet)
+	{
+		removeall();
+		this->runAction(CCSequence::createWithTwoActions(CCDelayTime::create(BOXDISTIME*1.5),
+			CCCallFunc::create(this,callfunc_selector(PlayLayer::judgeAndRepair))));
+		return;
+	}
+	
+	islock = false;
+}
+
+void PlayLayer::judgeAndRepair()
+{
+	int num = repair();
+	this->runAction(CCSequence::createWithTwoActions(CCDelayTime::create(num*BOXMOVETIME + 0.03f),
+		CCCallFunc::create(this,callfunc_selector(PlayLayer::unlock))));
+}
+
+
+
 
 

@@ -6,6 +6,8 @@
 
 class PlayLayer : public cocos2d::CCLayer
 {
+
+	bool islock;
 public:
 	
     // Here's a difference. Method 'init' in cocos2d-x returns bool, instead of returning 'id' in cocos2d-iphone
@@ -17,6 +19,7 @@ public:
 
 	cocos2d::CCArray *m_content;
 	cocos2d::CCArray *m_toRemove;
+	cocos2d::CCArray *m_toJudge;
 	cocos2d::CCSprite *bg;
 	PlayLayer();
 	~PlayLayer();
@@ -37,5 +40,10 @@ public:
 	void removeall();
 
 	void removeSprite(CCObject *p);
+
+	void lock();
+	void unlock();
+
+	void judgeAndRepair();
 };
 

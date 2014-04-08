@@ -31,17 +31,35 @@ CCPoint Box::getP()
 	return ccp(GRID_LEFT + (0.5 + x) * BOXSIZE , GRID_BUTTON + (0.5 + y) * BOXSIZE);
 }
 
-bool Box::check(int px = -1,int py = -1,int dir = HORIZON)
+bool Box::check(Box *other,int dir)
 {
 	int u,d,l,r;
 	PlayLayer *pLayer = (PlayLayer *)pSprite->getParent();
 	u=d=l=r=0;
-	if (px == -1)
+	int px=x;
+	int py=y;
+	if (pLayer->m_toRemove->containsObject(pLayer->getBoxAtPosXY(px,py)))
 	{
-		px=x;py=y;
+		return true;
 	}
-	if (pLayer->m_toRemove->containsObject(this))
+	if (combo_type == COMBO_TYPE_ALL && other != NULL)
 	{
+		CCObject *p;
+		for (int i=0;i<GRID_WIDTH;i++)
+		{
+			for (int j=0;j<GRID_HEIGHT;j++)
+			{
+				Box *p = pLayer->getBoxAtPosXY(i,j);
+				if (p->_type == other->_type)
+				{
+					pLayer->m_toRemove->addObject(p);
+				}
+				
+			}
+			
+		}
+		
+		pLayer->m_toRemove->addObject(this);
 		return true;
 	}
 	
@@ -53,7 +71,7 @@ bool Box::check(int px = -1,int py = -1,int dir = HORIZON)
 		}
 		else break;
 	}
-	for (int i = px - 1;i > 0 ; i--)
+	for (int i = px - 1;i >= 0 ; i--)
 	{
 		if (pLayer->getBoxAtPosXY(i,py)->_type == _type)
 		{
@@ -69,7 +87,7 @@ bool Box::check(int px = -1,int py = -1,int dir = HORIZON)
 		}
 		else break;
 	}
-	for (int i = py - 1;i > 0 ; i--)
+	for (int i = py - 1;i >= 0 ; i--)
 	{
 		if (pLayer->getBoxAtPosXY(px,i)->_type == _type)
 		{
@@ -91,6 +109,7 @@ bool Box::check(int px = -1,int py = -1,int dir = HORIZON)
 		if (r+l>=4)
 		{
 			combo_type = COMBO_TYPE_ALL;
+			_type = -2;
 			pSprite->setTexture(CCTextureCache::sharedTextureCache()->addImage(BOX_NAME[8]));
 		}
 		else if (r+l==3)
@@ -99,7 +118,7 @@ bool Box::check(int px = -1,int py = -1,int dir = HORIZON)
 		}
 		else
 		{
-			pLayer->m_toRemove->addObject(this);
+			pLayer->m_toRemove->addObject(pLayer->getBoxAtPosXY(px,py));
 		}
 		
 		return true;
@@ -119,6 +138,7 @@ bool Box::check(int px = -1,int py = -1,int dir = HORIZON)
 		if (u+d>=4)
 		{
 			combo_type = COMBO_TYPE_ALL;
+			_type = -2;
 			pSprite->setTexture(CCTextureCache::sharedTextureCache()->addImage(BOX_NAME[8]));
 		}
 		else if (u+d==3)
@@ -127,7 +147,7 @@ bool Box::check(int px = -1,int py = -1,int dir = HORIZON)
 		}
 		else
 		{
-			pLayer->m_toRemove->addObject(this);
+			pLayer->m_toRemove->addObject(pLayer->getBoxAtPosXY(px,py));
 		}
 		return true;
 	}

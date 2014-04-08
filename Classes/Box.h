@@ -23,6 +23,6 @@ public:
     CREATE_FUNC(Box);
 	void swap(Box *a);
 	CCPoint getP();
-	bool check(int px,int py,int dir);
+	bool check(Box *other = NULL,int dir = HORIZON);
 };
 
