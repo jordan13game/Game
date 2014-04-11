@@ -37,7 +37,7 @@ bool PlayLayer::init()
 
 	}
 	this->setTouchEnabled(true);
-	judgeAndRepair();
+
     return true;
 }
 
@@ -278,6 +278,52 @@ void PlayLayer::judgeAndRepair()
 	this->runAction(CCSequence::createWithTwoActions(CCDelayTime::create(num*BOXMOVETIME + 0.03f),
 		CCCallFunc::create(this,callfunc_selector(PlayLayer::unlock))));
 }
+
+void PlayLayer::addToRemove( Box *p )
+{
+	if (p == boundBox)
+	{
+		return ;
+	}
+	
+
+	if (!m_toRemove->containsObject(p))
+	{
+		m_toRemove->addObject(p);
+		if (p->combo_type == COMBO_TYPE_COL)
+		{
+			for (int i=0;i<GRID_HEIGHT;i++)
+			{
+				addToRemove(getBoxAtPosXY(p->x,i));
+			}
+			
+		}
+		else if (p->combo_type == COMBO_TYPE_ROW)
+		{
+			for (int i=0;i<GRID_WIDTH;i++)
+			{
+				addToRemove(getBoxAtPosXY(i,p->y));
+			}
+			
+		}
+		else if (p->combo_type == COMBO_TYPE_SQR)
+		{
+			for (int i=-1;i<=1;i++)
+			{
+				for (int j=-1;j<=1;j++)
+				{
+					addToRemove(getBoxAtPosXY(p->x+i,p->y+j));
+				}
+				
+			}
+			
+		}
+		
+		
+	}
+	
+}
+
 
 
 

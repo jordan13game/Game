@@ -44,7 +44,6 @@ bool Box::check(Box *other,int dir)
 	}
 	if (combo_type == COMBO_TYPE_ALL && other != NULL)
 	{
-		CCObject *p;
 		for (int i=0;i<GRID_WIDTH;i++)
 		{
 			for (int j=0;j<GRID_HEIGHT;j++)
@@ -52,14 +51,14 @@ bool Box::check(Box *other,int dir)
 				Box *p = pLayer->getBoxAtPosXY(i,j);
 				if (p->_type == other->_type)
 				{
-					pLayer->m_toRemove->addObject(p);
+					pLayer->addToRemove(p);
 				}
 				
 			}
 			
 		}
 		
-		pLayer->m_toRemove->addObject(this);
+		pLayer->addToRemove(this);
 		return true;
 	}
 	
@@ -95,16 +94,38 @@ bool Box::check(Box *other,int dir)
 		}
 		else break;
 	}
+	if (l+r >= 2 && u+d >=2)
+	{
+		for (int i=1;i<=r;i++)
+		{
+			pLayer->addToRemove(pLayer->getBoxAtPosXY(px+i,py));
+		}
+		for (int i=1;i<=l;i++)
+		{
+			pLayer->addToRemove(pLayer->getBoxAtPosXY(px-i,py));
+		}
+		for (int i=1;i<=u;i++)
+		{
+			pLayer->addToRemove(pLayer->getBoxAtPosXY(px,py+i));
+		}
+		for (int i=1;i<=d;i++)
+		{
+			pLayer->addToRemove(pLayer->getBoxAtPosXY(px,py-i));
+		}
+		combo_type = COMBO_TYPE_SQR;
+		return true;
+	}
+	
 	if (l+r >= 2 )
 	{
 		
 		for (int i=1;i<=r;i++)
 		{
-			pLayer->m_toRemove->addObject(pLayer->getBoxAtPosXY(px+i,py));
+			pLayer->addToRemove(pLayer->getBoxAtPosXY(px+i,py));
 		}
 		for (int i=1;i<=l;i++)
 		{
-			pLayer->m_toRemove->addObject(pLayer->getBoxAtPosXY(px-i,py));
+			pLayer->addToRemove(pLayer->getBoxAtPosXY(px-i,py));
 		}
 		if (r+l>=4)
 		{
@@ -118,7 +139,7 @@ bool Box::check(Box *other,int dir)
 		}
 		else
 		{
-			pLayer->m_toRemove->addObject(pLayer->getBoxAtPosXY(px,py));
+			pLayer->addToRemove(pLayer->getBoxAtPosXY(px,py));
 		}
 		
 		return true;
@@ -128,11 +149,11 @@ bool Box::check(Box *other,int dir)
 		
 		for (int i=1;i<=u;i++)
 		{
-			pLayer->m_toRemove->addObject(pLayer->getBoxAtPosXY(px,py+i));
+			pLayer->addToRemove(pLayer->getBoxAtPosXY(px,py+i));
 		}
 		for (int i=1;i<=d;i++)
 		{
-			pLayer->m_toRemove->addObject(pLayer->getBoxAtPosXY(px,py-i));
+			pLayer->addToRemove(pLayer->getBoxAtPosXY(px,py-i));
 		}
 		
 		if (u+d>=4)
@@ -147,7 +168,7 @@ bool Box::check(Box *other,int dir)
 		}
 		else
 		{
-			pLayer->m_toRemove->addObject(pLayer->getBoxAtPosXY(px,py));
+			pLayer->addToRemove(pLayer->getBoxAtPosXY(px,py));
 		}
 		return true;
 	}

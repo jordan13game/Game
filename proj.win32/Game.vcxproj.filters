@@ -33,6 +33,9 @@
     <ClCompile Include="..\Classes\Box.cpp">
       <Filter>Classes\Node</Filter>
     </ClCompile>
+    <ClCompile Include="..\Classes\SelectScene.cpp">
+      <Filter>Classes\Scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -52,6 +55,9 @@
     </ClInclude>
     <ClInclude Include="..\Classes\GameDefine.h">
       <Filter>Classes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\SelectScene.h">
+      <Filter>Classes\Scene</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

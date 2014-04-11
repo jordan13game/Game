@@ -45,5 +45,9 @@ public:
 	void unlock();
 
 	void judgeAndRepair();
+
+	void addToRemove(Box *p);
+
+	int Boxtype[GRID_WIDTH][GRID_HEIGHT];
 };
 

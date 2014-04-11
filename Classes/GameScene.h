@@ -1,7 +1,7 @@
 #pragma once
 
 #include "cocos2d.h"
-
+#include "cocos-ext.h"
 #include "PlayLayer.h"
 
 class GameScene : public cocos2d::CCScene
@@ -12,6 +12,9 @@ public:
 
 	PlayLayer *pPlayLayer;
 
+	cocos2d::extension::UILayer *player;
+
+	void loadLevel(int num);
     // implement the "static node()" method manually
     CREATE_FUNC(GameScene);
 };
