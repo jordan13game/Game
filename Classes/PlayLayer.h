@@ -20,7 +20,13 @@ public:
 	cocos2d::CCArray *m_content;
 	cocos2d::CCArray *m_toRemove;
 	cocos2d::CCArray *m_toJudge;
+	cocos2d::CCArray *m_toHint;
 	cocos2d::CCSprite *bg;
+
+	int GameLeft;
+	int GameType;
+	int GameTot;
+
 	PlayLayer();
 	~PlayLayer();
 	bool checkBox();
@@ -49,5 +55,19 @@ public:
 	void addToRemove(Box *p);
 
 	int Boxtype[GRID_WIDTH][GRID_HEIGHT];
+
+	void addHint(float det);
+
+	bool checkAble();
+
+	void removeAllBoxes();
+
+	void rebuildAll();
+
+	void reduce(float det);
+
+	void endGame();
+
+	void startGame(int num);
 };
 

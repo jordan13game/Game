@@ -28,11 +28,9 @@ void GameScene::loadLevel( int num )
 	player = UILayer::create();
 	player->addWidget(CCUIHELPER->createWidgetFromJsonFile("Head.ExportJson"));
 	CCSize sz = CCDirector::sharedDirector()->getWinSize();
-	this->addChild(player);
+	this->addChild(player,1,1);
 	CCSize tmp=player->getWidgetByName("Panel")->getSize();
 	player->setPosition(0,sz.height-tmp.height);
-	pPlayLayer->judgeAndRepair();
-	UILoadingBar *p = (UILoadingBar *)player->getWidgetByName("redBar");
-	p->setPercent(50);
+	pPlayLayer->startGame(num);
 
 }

@@ -1,8 +1,9 @@
 #include "PlayLayer.h"
 #include "Box.h"
+#include "cocos-ext.h"
 
 USING_NS_CC;
-
+USING_NS_CC_EXT;
 
 // on "init" you need to initialize your instance
 bool PlayLayer::init()
@@ -66,6 +67,8 @@ PlayLayer::~PlayLayer()
 	m_toRemove = NULL;
 	m_toJudge->release();
 	m_toJudge = NULL;
+	m_toHint->release();
+	m_toHint = NULL;
 }
 
 PlayLayer::PlayLayer()
@@ -80,6 +83,8 @@ PlayLayer::PlayLayer()
 	m_toRemove->retain();
 	m_toJudge = CCArray::create();
 	m_toJudge->retain();
+	m_toHint = CCArray::create();
+	m_toHint->retain();
 	islock = false;
 }
 
@@ -169,6 +174,20 @@ void PlayLayer::ccTouchMoved( CCTouch *pTouch, CCEvent *pEvent )
 {
 	if (m_seteledBox != NULL)
 	{
+		if (m_toHint->count())
+		{
+			CCObject *p;
+			CCARRAY_FOREACH(m_toHint,p)
+			{
+				CCSprite *t = (CCSprite *)p;
+				t->stopActionByTag(1);
+				t->setVisible(true);
+			}
+			m_toHint->removeAllObjects();
+		}
+		
+		this->unschedule(schedule_selector(PlayLayer::addHint));
+
 		CCPoint sub = ccpSub(pTouch->getLocation(),m_seteledBox->getP());
 		int dx = sub.x / BOXSIZE, dy = sub.y / BOXSIZE;
 		if (dx || dy)
@@ -183,13 +202,13 @@ void PlayLayer::ccTouchMoved( CCTouch *pTouch, CCEvent *pEvent )
 			m_seteledBox = NULL;
 		}
 		
-		
 	}
 }
 
 void PlayLayer::ccTouchEnded( CCTouch *pTouch, CCEvent *pEvent )
 {
-	
+	this->scheduleOnce(schedule_selector(PlayLayer::addHint),5.0f);
+		
 }
 
 void PlayLayer::registerWithTouchDispatcher()
@@ -269,7 +288,29 @@ void PlayLayer::unlock()
 		return;
 	}
 	
+	if (!checkAble())
+	{
+		removeAllBoxes();
+		this->runAction(CCSequence::create(CCDelayTime::create(BOXDISTIME*1.5),
+			CCCallFunc::create(this,callfunc_selector(PlayLayer::rebuildAll)),
+			CCDelayTime::create(BOXDISTIME*1.5),
+			CCCallFunc::create(this,callfunc_selector(PlayLayer::unlock)),
+			NULL));
+		return;
+	}
+	
+	if (GameType == GAMETYPE_STEP && islock == true)
+	{
+		reduce(0);
+	}
+
 	islock = false;
+
+	
+	
+
+	this->scheduleOnce(schedule_selector(PlayLayer::addHint),5.0f);
+
 }
 
 void PlayLayer::judgeAndRepair()
@@ -323,6 +364,152 @@ void PlayLayer::addToRemove( Box *p )
 	}
 	
 }
+
+void PlayLayer::addHint( float det )
+{
+	if (m_toHint->count())
+	{
+		m_toHint->removeAllObjects();
+	}
+
+	checkAble();
+	
+	
+	CCObject *p;
+	CCARRAY_FOREACH(m_toHint,p)
+	{
+		CCRepeatForever *bli = CCRepeatForever::create(CCBlink::create(1,3));
+		bli->setTag(1);
+		CCSprite *tmp = (CCSprite *)p;
+		tmp->stopAllActions();
+		tmp->runAction(bli);
+	}
+}
+
+bool PlayLayer::checkAble()
+{
+	int dx[][2]={0,0,-1,-2,1,2,2,3,1,1,1,1,0,0,-1,-2,1,2,-2,-3,-1,-1,-1,-1};
+	int dy[][2]={-2,-3,-1,-1,-1,-1,0,0,-1,-2,1,2,2,3,1,1,1,1,0,0,-1,-2,1,2};
+
+	for (int i=0;i<GRID_WIDTH;i++)
+	{
+		for (int j=0;j<GRID_HEIGHT;j++)
+		{
+			Box *now = getBoxAtPosXY(i,j);
+			for (int k=0;k<24;k++)
+			{
+				Box *a = getBoxAtPosXY(i+dx[k][0],j+dy[k][0]);
+				Box *b = getBoxAtPosXY(i+dx[k][1],j+dy[k][1]);
+
+				if (a==boundBox||b==boundBox)
+				{
+					continue;
+				}
+
+				if (now->_type==a->_type&&now->_type==b->_type)
+				{
+					m_toHint->addObject(now->pSprite);
+					m_toHint->addObject(a->pSprite);
+					m_toHint->addObject(b->pSprite);
+
+					
+					return true;
+				}
+
+
+			}
+
+		}
+
+	}
+
+	return false;
+}
+
+void PlayLayer::removeAllBoxes()
+{
+	for (int i=0;i<GRID_WIDTH;i++)
+	{
+		for (int j=0;j<GRID_HEIGHT;j++)
+		{
+			Box *tmp = getBoxAtPosXY(i,j);
+			if (tmp->combo_type == COMBO_TYPE_NONE)
+			{
+				tmp->pSprite->stopAllActions();
+				tmp->pSprite->runAction(CCScaleTo::create(BOXDISTIME,0,0));
+			}
+		}
+		
+	}
+	
+}
+
+void PlayLayer::rebuildAll()
+{
+	for (int i=0;i<GRID_WIDTH;i++)
+	{
+		for (int j=0;j<GRID_HEIGHT;j++)
+		{
+			Box *tmp = getBoxAtPosXY(i,j);
+			if (tmp->combo_type == COMBO_TYPE_NONE)
+			{
+				int type = rand()%MAX_NORMALBOX_NUM;
+				tmp->pSprite->setTexture(CCTextureCache::sharedTextureCache()->addImage(BOX_NAME[type]));
+				tmp->_type = type;
+				tmp->pSprite->stopAllActions();
+				tmp->pSprite->runAction(CCScaleTo::create(BOXDISTIME,1,1));
+			}
+			m_toJudge->addObject(tmp);
+		}
+
+	}
+}
+
+void PlayLayer::reduce( float det )
+{
+	GameLeft--;
+	UILayer *player = (UILayer *)this->getParent()->getChildByTag(1);
+	UILoadingBar *p = (UILoadingBar *)player->getWidgetByName("redBar");
+	p->setPercent(GameLeft * 100 / GameTot);
+	if (GameLeft == 0)
+	{
+		endGame();
+	}
+	
+}
+
+void PlayLayer::endGame()
+{
+	if (GameType == GAMETYPE_TIME)
+	{
+		this->unschedule(schedule_selector(PlayLayer::reduce));
+	}
+	
+}
+
+void PlayLayer::startGame( int num )
+{
+
+	GameLeft = GameTot = 60;
+	GameType = GAMETYPE_STEP;
+	if (GameType == GAMETYPE_TIME)
+	{
+		this->schedule(schedule_selector(PlayLayer::reduce),1);
+	}
+	else if (GameType == GAMETYPE_STEP)
+	{
+
+	}
+
+	judgeAndRepair();
+}
+
+
+
+
+
+
+
 
 
 
