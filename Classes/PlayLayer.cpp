@@ -531,7 +531,7 @@ void PlayLayer::startGame( int num )
 
 	GameLeft = GameTot = 60;
 	GameType = GAMETYPE_STEP;
-	targetScore = 10000;
+	targetScore = 1000;
 	UILayer *player = (UILayer *)this->getParent()->getChildByTag(1);
 	UILabelAtlas *p = (UILabelAtlas *)player->getWidgetByName("TargetScore");
 	p->setStringValue(CCString::createWithFormat("%d",targetScore)->m_sString.c_str());
@@ -566,10 +566,19 @@ void PlayLayer::updateScore()
 	bar->setPercent(min(100,totScore*100/(targetScore*3)));
 	for (int i=1;i<=3;i++)
 	{
-		if (totScore>=targetScore*i)
+		if (totScore>=targetScore*i && player->getWidgetByName(CCString::createWithFormat("StarGray%d",i)->m_sString.c_str())->isVisible())
 		{
 			player->getWidgetByName(CCString::createWithFormat("StarGray%d",i)->m_sString.c_str())->setVisible(false);
 			player->getWidgetByName(CCString::createWithFormat("Star%d",i)->m_sString.c_str())->setVisible(true);
+			UIImageView *t = (UIImageView *)player->getWidgetByName(CCString::createWithFormat("Star%d",i)->m_sString.c_str());
+			CCParticleExplosion *tmp = CCParticleExplosion::createWithTotalParticles(40);
+			tmp->setStartColor(ccc4f(1,1,1,1));
+			tmp->setEndColor(ccc4f(1,1,1,1));
+			tmp->setSpeed(100);
+			tmp->setStartSize(50);
+			tmp->setPosition(0,0);
+			//tmp->setDuration(1);
+			t->addCCNode(tmp);
 		}
 		
 	}

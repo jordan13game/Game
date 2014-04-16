@@ -17,5 +17,9 @@ public:
 	void loadLevel(int num);
     // implement the "static node()" method manually
     CREATE_FUNC(GameScene);
+
+	int level;
+
+	void touchButton(cocos2d::CCObject* obj,cocos2d::extension::TouchEventType type );
 };
 

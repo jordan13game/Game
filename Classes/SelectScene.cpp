@@ -15,7 +15,7 @@ bool SelectScene::init()
     }
     
 	pLayer = UILayer::create();
-	pLayer->addWidget(CCUIHELPER->createWidgetFromJsonFile("SelectScene.ExportJson"));
+	pLayer->addWidget(CCUIHELPER->createWidgetFromJsonFile("SelectScene/SelectScene.ExportJson"));
 	this->addChild(pLayer);
 
 	pScroll = (UIScrollView *)pLayer->getWidgetByTag(1)->getChildByName("gameScrollView");
@@ -31,7 +31,7 @@ bool SelectScene::init()
 cocos2d::extension::UIButton * SelectScene::getButton( int num )
 {
 	UILayer *tmp = UILayer::create();
-	tmp->addWidget(CCUIHELPER->createWidgetFromJsonFile("LevelButton.ExportJson"));
+	tmp->addWidget(CCUIHELPER->createWidgetFromJsonFile("LevelButton/LevelButton.ExportJson"));
 
 	UIButton *bt = (UIButton *)tmp->getWidgetByTag(29)->getChildByName("LevelButton");
 
