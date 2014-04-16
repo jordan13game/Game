@@ -1,6 +1,7 @@
 #include "Box.h"
 #include "PlayLayer.h"
 
+
 USING_NS_CC;
 
 
@@ -16,6 +17,7 @@ bool Box::init()
 	pSprite = NULL;
     combo_type = 0;
 	_type = -1;
+	removeable = false;
     return true;
 }
 
@@ -94,7 +96,37 @@ bool Box::check(Box *other,int dir)
 		}
 		else break;
 	}
-	if (l+r >= 2 && u+d >=2)
+	if ((l+r==4&&u+d==2)||(l+r==2&&u+d==4))
+	{
+		for (int i=0;i<GRID_WIDTH;i++)
+		{
+			for (int j=0;j<GRID_HEIGHT;j++)
+			{
+				pLayer->addToRemove(pLayer->getBoxAtPosXY(i,j));
+			}
+			
+		}
+		return true;
+	}
+	
+
+	if ((l+r==3&&u+d==2)||(l+r==2&&u+d==3))
+	{
+		for (int i=-1;i<=1;i++)
+		{
+			for (int j=0;j<GRID_HEIGHT;j++)
+			{
+				pLayer->addToRemove(pLayer->getBoxAtPosXY(px+i,j));
+			}
+			for (int j=0;j<GRID_WIDTH;j++)
+			{
+				pLayer->addToRemove(pLayer->getBoxAtPosXY(j,py+i));
+			}
+		}
+		return true;
+	}
+	
+	if (l+r == 2 && u+d ==2)
 	{
 		for (int i=1;i<=r;i++)
 		{
@@ -132,15 +164,15 @@ bool Box::check(Box *other,int dir)
 			combo_type = COMBO_TYPE_ALL;
 			_type = -2;
 			pSprite->setTexture(CCTextureCache::sharedTextureCache()->addImage(BOX_NAME[8]));
+			removeable = true;
 		}
 		else if (r+l==3)
 		{
-			combo_type = (dir == HORIZON ? COMBO_TYPE_ROW : COMBO_TYPE_COL);
+			addEffect(dir == HORIZON ? COMBO_TYPE_ROW : COMBO_TYPE_COL);
+			removeable = true;
 		}
-		else
-		{
-			pLayer->addToRemove(pLayer->getBoxAtPosXY(px,py));
-		}
+
+		pLayer->addToRemove(pLayer->getBoxAtPosXY(px,py));
 		
 		return true;
 	}
@@ -161,19 +193,57 @@ bool Box::check(Box *other,int dir)
 			combo_type = COMBO_TYPE_ALL;
 			_type = -2;
 			pSprite->setTexture(CCTextureCache::sharedTextureCache()->addImage(BOX_NAME[8]));
+			removeable = true;
 		}
 		else if (u+d==3)
 		{
-			combo_type = (dir == HORIZON ? COMBO_TYPE_ROW : COMBO_TYPE_COL);
+			addEffect(dir == HORIZON ? COMBO_TYPE_ROW : COMBO_TYPE_COL);
+			removeable = true;
 		}
-		else
-		{
-			pLayer->addToRemove(pLayer->getBoxAtPosXY(px,py));
-		}
+		pLayer->addToRemove(pLayer->getBoxAtPosXY(px,py));
 		return true;
 	}
 	return false;
 }
+
+void Box::addEffect( int type )
+{
+	combo_type = type;
+	if (type == COMBO_TYPE_ROW)
+	{
+		pSprite->addChild(getEffectWithRadio(0));
+		pSprite->addChild(getEffectWithRadio(180));
+	}
+	else if (type == COMBO_TYPE_COL)
+	{
+		pSprite->addChild(getEffectWithRadio(90));
+		pSprite->addChild(getEffectWithRadio(270));
+	}
+	pSprite->setZOrder(100);
+	
+}
+
+CCParticleMeteor * Box::getEffectWithRadio( float radio )
+{
+	CCParticleMeteor *p = CCParticleMeteor::createWithTotalParticles(20);
+	p->setGravity(ccp(0,0));
+	p->setAngle(radio);
+	p->setAngleVar(2);
+	p->setScale(0.6);
+	p->setSpeed(80);
+	p->setSpeedVar(0);
+	p->setPosition(BOXSIZE/2.0,BOXSIZE/2.0);
+	p->setStartSize(40);
+	p->setEndSize(10);
+	p->setEndSizeVar(0);
+	p->setLife(1);
+	p->setStartColor(ccc4f(1,1,1,1));
+	p->setEndColor(ccc4f(1,1,1,1));
+	p->setBlendAdditive(false);
+	return p;
+}
+
+
 
 
 

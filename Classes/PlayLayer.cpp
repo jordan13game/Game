@@ -2,8 +2,12 @@
 #include "Box.h"
 #include "cocos-ext.h"
 
+
 USING_NS_CC;
 USING_NS_CC_EXT;
+using namespace std;
+
+
 
 // on "init" you need to initialize your instance
 bool PlayLayer::init()
@@ -38,6 +42,9 @@ bool PlayLayer::init()
 
 	}
 	this->setTouchEnabled(true);
+	totScore = 0;
+	nowScore = 0;
+
 
     return true;
 }
@@ -207,7 +214,7 @@ void PlayLayer::ccTouchMoved( CCTouch *pTouch, CCEvent *pEvent )
 
 void PlayLayer::ccTouchEnded( CCTouch *pTouch, CCEvent *pEvent )
 {
-	this->scheduleOnce(schedule_selector(PlayLayer::addHint),5.0f);
+	this->scheduleOnce(schedule_selector(PlayLayer::addHint),HINT_DELAY);
 		
 }
 
@@ -246,12 +253,22 @@ bool PlayLayer::swapTwoBoxes( int dx,int dy )
 
 void PlayLayer::removeall()
 {
+	nowScore += SCORE;
 	CCObject *obj;
 	CCARRAY_FOREACH(m_toRemove,obj)
 	{
 		Box *p = (Box *)obj;
-		p->pSprite->runAction(CCSequence::createWithTwoActions(CCScaleTo::create(BOXDISTIME,0,0),
-			CCCallFuncO::create(this,callfuncO_selector(PlayLayer::removeSprite),p)));
+		if (p->removeable)
+		{
+			p->pSprite->runAction(CCSequence::createWithTwoActions(CCDelayTime::create(BOXDISTIME),
+				CCCallFuncO::create(this,callfuncO_selector(PlayLayer::removeSprite),p)));
+		}
+		else
+		{
+			p->pSprite->runAction(CCSequence::createWithTwoActions(CCScaleTo::create(BOXDISTIME,0,0),
+				CCCallFuncO::create(this,callfuncO_selector(PlayLayer::removeSprite),p)));
+		}
+		
 	}
 	m_toRemove->removeAllObjects();
 }
@@ -259,13 +276,32 @@ void PlayLayer::removeall()
 void PlayLayer::removeSprite( CCObject *p )
 {
 	Box *tmp = (Box *)p;
-	this->removeChild(tmp->pSprite,true);
-	tmp->_type = -1;
+	totScore += nowScore;
+	updateScore();
+	CCLabelTTF *f = CCLabelTTF::create("0","fonts/Marker Felt.ttf",50);
+	CCString *str = CCString::createWithFormat("%d",nowScore);
+	f->setString(str->m_sString.c_str());
+	f->setPosition(tmp->getP());
+	this->addChild(f);
+	f->runAction(CCSequence::createWithTwoActions(CCMoveBy::create(BOXDISTIME,ccp(0,20)),
+		CCCallFuncN::create(this,callfuncN_selector(PlayLayer::removeFont))));
+	if (!tmp->removeable)
+	{
+		this->removeChild(tmp->pSprite,true);
+		tmp->_type = -1;
+	}
+	else
+	{
+		tmp->removeable = false;
+	}
+	
+	
 }
 
 void PlayLayer::lock()
 {
 	islock = true;
+	this->unschedule(schedule_selector(PlayLayer::resetScore));
 }
 
 void PlayLayer::unlock()
@@ -306,10 +342,11 @@ void PlayLayer::unlock()
 
 	islock = false;
 
-	
+
+	this->scheduleOnce(schedule_selector(PlayLayer::resetScore),SCORE_DELAY);
 	
 
-	this->scheduleOnce(schedule_selector(PlayLayer::addHint),5.0f);
+	this->scheduleOnce(schedule_selector(PlayLayer::addHint),HINT_DELAY);
 
 }
 
@@ -331,6 +368,8 @@ void PlayLayer::addToRemove( Box *p )
 	if (!m_toRemove->containsObject(p))
 	{
 		m_toRemove->addObject(p);
+		if (p->removeable)return;
+		
 		if (p->combo_type == COMBO_TYPE_COL)
 		{
 			for (int i=0;i<GRID_HEIGHT;i++)
@@ -492,6 +531,10 @@ void PlayLayer::startGame( int num )
 
 	GameLeft = GameTot = 60;
 	GameType = GAMETYPE_STEP;
+	targetScore = 10000;
+	UILayer *player = (UILayer *)this->getParent()->getChildByTag(1);
+	UILabelAtlas *p = (UILabelAtlas *)player->getWidgetByName("TargetScore");
+	p->setStringValue(CCString::createWithFormat("%d",targetScore)->m_sString.c_str());
 	if (GameType == GAMETYPE_TIME)
 	{
 		this->schedule(schedule_selector(PlayLayer::reduce),1);
@@ -503,6 +546,39 @@ void PlayLayer::startGame( int num )
 
 	judgeAndRepair();
 }
+
+void PlayLayer::resetScore( float det )
+{
+	nowScore = 0;
+}
+
+void PlayLayer::removeFont( cocos2d::CCNode *sender )
+{
+	this->removeChild(sender);
+}
+
+void PlayLayer::updateScore()
+{
+	UILayer *player = (UILayer *)this->getParent()->getChildByTag(1);
+	UILabelAtlas *p = (UILabelAtlas *)player->getWidgetByName("NowScore");
+	p->setStringValue(CCString::createWithFormat("%d",totScore)->m_sString.c_str());
+	UILoadingBar *bar = (UILoadingBar *)player->getWidgetByName("blueBar");
+	bar->setPercent(min(100,totScore*100/(targetScore*3)));
+	for (int i=1;i<=3;i++)
+	{
+		if (totScore>=targetScore*i)
+		{
+			player->getWidgetByName(CCString::createWithFormat("StarGray%d",i)->m_sString.c_str())->setVisible(false);
+			player->getWidgetByName(CCString::createWithFormat("Star%d",i)->m_sString.c_str())->setVisible(true);
+		}
+		
+	}
+	
+}
+
+
+
+
 
 
 

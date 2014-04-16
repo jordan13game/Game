@@ -27,6 +27,11 @@ public:
 	int GameType;
 	int GameTot;
 
+	int totScore;
+	int nowScore;
+	int targetScore;
+	void resetScore(float det);
+
 	PlayLayer();
 	~PlayLayer();
 	bool checkBox();
@@ -69,5 +74,9 @@ public:
 	void endGame();
 
 	void startGame(int num);
+
+	void removeFont(cocos2d::CCNode *sender);
+
+	void updateScore();
 };
 

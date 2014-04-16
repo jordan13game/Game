@@ -4,6 +4,7 @@
 #include "GameDefine.h"
 using namespace cocos2d;
 
+
 class PlayLayer;
 
 class Box : public cocos2d::CCNode
@@ -24,5 +25,11 @@ public:
 	void swap(Box *a);
 	CCPoint getP();
 	bool check(Box *other = NULL,int dir = HORIZON);
+
+	bool removeable;
+
+	CCParticleMeteor *getEffectWithRadio(float radio);
+
+	void addEffect(int type);
 };
 

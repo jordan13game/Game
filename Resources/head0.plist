@@ -118,6 +118,25 @@
 				<key>offsetY</key>
 				<real>0</real>
 			</dict>
+			<key>roleLogo.png</key>
+			<dict>
+				<key>width</key>
+				<integer>575</integer>
+				<key>height</key>
+				<integer>225</integer>
+				<key>originalWidth</key>
+				<integer>575</integer>
+				<key>originalHeight</key>
+				<integer>225</integer>
+				<key>x</key>
+				<integer>249</integer>
+				<key>y</key>
+				<integer>920</integer>
+				<key>offsetX</key>
+				<real>0</real>
+				<key>offsetY</key>
+				<real>0</real>
+			</dict>
 		</dict>
 		<key>metadata</key>
 		<dict>

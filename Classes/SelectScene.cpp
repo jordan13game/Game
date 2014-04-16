@@ -24,8 +24,6 @@ bool SelectScene::init()
 	{
 		pScroll->addChild(getButton(i));
 	}
-	
-	
     
     return true;
 }
