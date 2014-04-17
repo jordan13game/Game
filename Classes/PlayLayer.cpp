@@ -1,6 +1,7 @@
-#include "PlayLayer.h"
+﻿#include "PlayLayer.h"
 #include "Box.h"
-#include "cocos-ext.h"
+#include "GameScene.h"
+#include "SelectScene.h"
 
 
 USING_NS_CC;
@@ -523,13 +524,47 @@ void PlayLayer::endGame()
 	{
 		this->unschedule(schedule_selector(PlayLayer::reduce));
 	}
-	
+	CCScene *pp = CCDirector::sharedDirector()->getRunningScene();
+
+	CCSize sz = CCDirector::sharedDirector()->getWinSize();
+
+	CCRenderTexture *tex = CCRenderTexture::create(sz.width,sz.height);
+
+	tex->begin();
+	pp->visit();
+	tex->end();
+
+	CCSprite *spr = CCSprite::createWithTexture(tex->getSprite()->getTexture());
+	spr->setPosition(ccp(sz.width/2,sz.height/2));
+	spr->setColor(ccGRAY);
+	spr->setFlipY(true);
+	this->getParent()->addChild(spr);
+
+	UILayer *p = UILayer::create();
+	p->addWidget(CCUIHELPER->createWidgetFromJsonFile("EndGame/EndGame.ExportJson"));
+	this->getParent()->addChild(p);
+	ActionManager::shareManager()->playActionByName("EndGame.ExportJson","Animation0");
+
+	UIButton *bt = (UIButton *)p->getWidgetByName("Panel")->getChildByName("return");
+	bt->setTouchEnabled(true);
+	bt->addTouchEventListener(this,toucheventselector(PlayLayer::touchReturn));
+
+	bt = (UIButton *)p->getWidgetByName("Panel")->getChildByName("restart");
+	bt->setTouchEnabled(true);
+	bt->addTouchEventListener(this,toucheventselector(PlayLayer::touchRestart));
+
+	bt = (UIButton *)p->getWidgetByName("Panel")->getChildByName("next");
+	bt->setTouchEnabled(true);
+	bt->addTouchEventListener(this,toucheventselector(PlayLayer::touchNext));
+
+
+
 }
 
 void PlayLayer::startGame( int num )
 {
 
-	GameLeft = GameTot = 60;
+	GameLeft = GameTot = 1;
 	GameType = GAMETYPE_STEP;
 	targetScore = 1000;
 	UILayer *player = (UILayer *)this->getParent()->getChildByTag(1);
@@ -584,6 +619,46 @@ void PlayLayer::updateScore()
 	}
 	
 }
+
+void PlayLayer::touchRestart( cocos2d::CCObject* obj,cocos2d::extension::TouchEventType type )
+{
+	if (type == TOUCH_EVENT_ENDED)
+	{
+		GameScene *pScene = GameScene::create();
+		CCTransitionScene * reScene = NULL;
+		reScene = CCTransitionFadeBL::create(1.0f, pScene);
+		CCDirector::sharedDirector()->replaceScene(reScene);
+		GameScene *p = (GameScene *)this->getParent();
+		pScene->loadLevel(p->level);
+	}
+}
+
+void PlayLayer::touchReturn( cocos2d::CCObject* obj,cocos2d::extension::TouchEventType type )
+{
+	if (type == TOUCH_EVENT_ENDED)
+	{
+		SelectScene *pScene = SelectScene::create();
+		CCTransitionScene * reScene = NULL;
+		reScene = CCTransitionFadeBL::create(1.0f, pScene);
+		CCDirector::sharedDirector()->replaceScene(reScene);
+	}
+}
+
+void PlayLayer::touchNext( cocos2d::CCObject* obj,cocos2d::extension::TouchEventType type )
+{
+	if (type == TOUCH_EVENT_ENDED)
+	{
+		GameScene *pScene = GameScene::create();
+		CCTransitionScene * reScene = NULL;
+		reScene = CCTransitionFadeBL::create(1.0f, pScene);
+		CCDirector::sharedDirector()->replaceScene(reScene);
+		GameScene *p = (GameScene *)this->getParent();
+		pScene->loadLevel(p->level+1);
+	}
+}
+
+
+
 
 
 

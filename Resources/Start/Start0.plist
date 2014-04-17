@@ -4,16 +4,16 @@
 	<dict>
 		<key>frames</key>
 		<dict>
-			<key>1.png</key>
+			<key>background4.jpg</key>
 			<dict>
 				<key>width</key>
-				<integer>139</integer>
+				<integer>720</integer>
 				<key>height</key>
-				<integer>169</integer>
+				<integer>1280</integer>
 				<key>originalWidth</key>
-				<integer>139</integer>
+				<integer>720</integer>
 				<key>originalHeight</key>
-				<integer>169</integer>
+				<integer>1280</integer>
 				<key>x</key>
 				<integer>0</integer>
 				<key>y</key>
@@ -23,18 +23,18 @@
 				<key>offsetY</key>
 				<real>0</real>
 			</dict>
-			<key>未标题-1.png</key>
+			<key>1aa7e3db322fb90916d3e80cb4327037.png</key>
 			<dict>
 				<key>width</key>
-				<integer>64</integer>
+				<integer>261</integer>
 				<key>height</key>
-				<integer>60</integer>
+				<integer>99</integer>
 				<key>originalWidth</key>
-				<integer>64</integer>
+				<integer>261</integer>
 				<key>originalHeight</key>
-				<integer>60</integer>
+				<integer>99</integer>
 				<key>x</key>
-				<integer>141</integer>
+				<integer>722</integer>
 				<key>y</key>
 				<integer>0</integer>
 				<key>offsetX</key>
@@ -48,9 +48,9 @@
 			<key>format</key>
 			<integer>0</integer>
 			<key>textureFileName</key>
-			<string>LevelButton0.png</string>
+			<string>Start0.png</string>
 			<key>realTextureFileName</key>
-			<string>LevelButton0.png</string>
+			<string>Start0.png</string>
 			<key>size</key>
 			<string>{1024,2048}</string>
 		</dict>

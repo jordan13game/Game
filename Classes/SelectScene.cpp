@@ -20,11 +20,13 @@ bool SelectScene::init()
 
 	pScroll = (UIScrollView *)pLayer->getWidgetByTag(1)->getChildByName("gameScrollView");
 
-	for (int i=1;i<40;i++)
+	for (int i=1;i<20;i++)
 	{
 		pScroll->addChild(getButton(i));
 	}
     
+	
+
     return true;
 }
 
@@ -45,6 +47,13 @@ cocos2d::extension::UIButton * SelectScene::getButton( int num )
 	bt->setPosition(ccp(50 + num % 3 * 220,pScroll->getInnerContainerSize().height - 200 * (num/3 + 1)));
 	bt->setTouchEnabled(true);
 	bt->addTouchEventListener(this,toucheventselector(SelectScene::touchButton));
+
+	for (int i=0;i<rand()%4;i++)
+	{
+		sprintf(a,"star%d",i);
+		bt->getChildByName(a)->setVisible(true);
+	}
+	
 
 	return bt;
 }

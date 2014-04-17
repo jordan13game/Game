@@ -1,6 +1,7 @@
 #pragma once
 
 #include "cocos2d.h"
+#include "cocos-ext.h"
 #include "GameDefine.h"
 #include "Box.h"
 
@@ -78,5 +79,9 @@ public:
 	void removeFont(cocos2d::CCNode *sender);
 
 	void updateScore();
+
+	void touchRestart(cocos2d::CCObject* obj,cocos2d::extension::TouchEventType type);
+	void touchReturn(cocos2d::CCObject* obj,cocos2d::extension::TouchEventType type);
+	void touchNext(cocos2d::CCObject* obj,cocos2d::extension::TouchEventType type);
 };
 
