@@ -561,7 +561,7 @@ void PlayLayer::endGame()
 	CCUserDefault::sharedUserDefault()->setIntegerForKey(CCString::createWithFormat("highscore%d",level)->m_sString.c_str(),high);
 
 	int star = CCUserDefault::sharedUserDefault()->getIntegerForKey(CCString::createWithFormat("star%d",level)->m_sString.c_str());
-	int nowstar = totScore/targetScore;
+	int nowstar = min(totScore/targetScore,3);
 	CCUserDefault::sharedUserDefault()->setIntegerForKey(CCString::createWithFormat("star%d",level)->m_sString.c_str(),max(star,nowstar));
 
 	for (int i=0;i<nowstar;i++)
