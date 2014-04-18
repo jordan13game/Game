@@ -32,3 +32,5 @@ static const int SCORE = 50;
 static const float HINT_DELAY = 5.0f;
 static const float SCORE_DELAY = 1.5f;
 
+
+static const int TOTLEVEL = 20;

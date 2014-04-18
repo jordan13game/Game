@@ -14,5 +14,7 @@ public:
 	void touchStart(cocos2d::CCObject* obj,cocos2d::extension::TouchEventType type);
     // implement the "static node()" method manually
     CREATE_FUNC(StartScene);
+
+	void initUserInfo();
 };
 

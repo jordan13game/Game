@@ -524,14 +524,14 @@ void PlayLayer::endGame()
 	{
 		this->unschedule(schedule_selector(PlayLayer::reduce));
 	}
-	CCScene *pp = CCDirector::sharedDirector()->getRunningScene();
+	CCScene *ppp = CCDirector::sharedDirector()->getRunningScene();
 
 	CCSize sz = CCDirector::sharedDirector()->getWinSize();
 
 	CCRenderTexture *tex = CCRenderTexture::create(sz.width,sz.height);
 
 	tex->begin();
-	pp->visit();
+	ppp->visit();
 	tex->end();
 
 	CCSprite *spr = CCSprite::createWithTexture(tex->getSprite()->getTexture());
@@ -549,24 +549,54 @@ void PlayLayer::endGame()
 	bt->setTouchEnabled(true);
 	bt->addTouchEventListener(this,toucheventselector(PlayLayer::touchReturn));
 
-	bt = (UIButton *)p->getWidgetByName("Panel")->getChildByName("restart");
-	bt->setTouchEnabled(true);
-	bt->addTouchEventListener(this,toucheventselector(PlayLayer::touchRestart));
 
-	bt = (UIButton *)p->getWidgetByName("Panel")->getChildByName("next");
-	bt->setTouchEnabled(true);
-	bt->addTouchEventListener(this,toucheventselector(PlayLayer::touchNext));
+	UILabelAtlas *pp = (UILabelAtlas *)p->getWidgetByName("nowscore");
+	pp->setStringValue(CCString::createWithFormat("%d",totScore)->m_sString.c_str());
 
+	pp = (UILabelAtlas *)p->getWidgetByName("highestscore");
+	int high = CCUserDefault::sharedUserDefault()->getIntegerForKey(CCString::createWithFormat("highscore%d",level)->m_sString.c_str());
+	high = max(high,totScore);
+	pp->setStringValue(CCString::createWithFormat("%d",high)->m_sString.c_str());
 
+	CCUserDefault::sharedUserDefault()->setIntegerForKey(CCString::createWithFormat("highscore%d",level)->m_sString.c_str(),high);
+
+	int star = CCUserDefault::sharedUserDefault()->getIntegerForKey(CCString::createWithFormat("star%d",level)->m_sString.c_str());
+	int nowstar = totScore/targetScore;
+	CCUserDefault::sharedUserDefault()->setIntegerForKey(CCString::createWithFormat("star%d",level)->m_sString.c_str(),max(star,nowstar));
+
+	for (int i=0;i<nowstar;i++)
+	{
+		p->getWidgetByName(CCString::createWithFormat("star%d",i)->m_sString.c_str())->setVisible(true);
+	}
+
+	UILabel *o = (UILabel *)p->getWidgetByName("num");
+	o->setText(CCString::createWithFormat("%d",level)->m_sString.c_str());
+
+	if (nowstar)
+	{
+		bt = (UIButton *)p->getWidgetByName("next");
+		bt->setTouchEnabled(true);
+		bt->addTouchEventListener(this,toucheventselector(PlayLayer::touchNext));
+		bt->setVisible(true);
+	}
+	else
+	{
+		bt = (UIButton *)p->getWidgetByName("restart");
+		bt->setTouchEnabled(true);
+		bt->addTouchEventListener(this,toucheventselector(PlayLayer::touchRestart));
+		bt->setVisible(true);
+	}
+	
+	
 
 }
 
 void PlayLayer::startGame( int num )
 {
-
-	GameLeft = GameTot = 1;
-	GameType = GAMETYPE_STEP;
-	targetScore = 1000;
+	level = num;
+	GameLeft = GameTot = 60 - num * 2;
+	GameType = num %2 ?GAMETYPE_STEP:GAMETYPE_TIME;
+	targetScore = 2000 * num;
 	UILayer *player = (UILayer *)this->getParent()->getChildByTag(1);
 	UILabelAtlas *p = (UILabelAtlas *)player->getWidgetByName("TargetScore");
 	p->setStringValue(CCString::createWithFormat("%d",targetScore)->m_sString.c_str());
@@ -629,7 +659,7 @@ void PlayLayer::touchRestart( cocos2d::CCObject* obj,cocos2d::extension::TouchEv
 		reScene = CCTransitionFadeBL::create(1.0f, pScene);
 		CCDirector::sharedDirector()->replaceScene(reScene);
 		GameScene *p = (GameScene *)this->getParent();
-		pScene->loadLevel(p->level);
+		pScene->loadLevel(level);
 	}
 }
 

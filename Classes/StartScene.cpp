@@ -1,6 +1,7 @@
 #include "StartScene.h"
 #include "SimpleAudioEngine.h"
 #include "SelectScene.h"
+#include "GameDefine.h"
 
 USING_NS_CC;
 USING_NS_CC_EXT;
@@ -28,6 +29,7 @@ bool StartScene::init()
 	bt->setTouchEnabled(true);
 	bt->addTouchEventListener(this,toucheventselector(StartScene::touchStart));
 
+	initUserInfo();
 
     return true;
 }
@@ -42,5 +44,21 @@ void StartScene::touchStart( cocos2d::CCObject* obj,cocos2d::extension::TouchEve
 		CCDirector::sharedDirector()->replaceScene(reScene);
 	}
 }
+
+void StartScene::initUserInfo()
+{
+	if (!CCUserDefault::sharedUserDefault()->getBoolForKey("isHaveSaveFileXml"))
+	{
+		CCUserDefault::sharedUserDefault()->setBoolForKey("isHaveSaveFileXml",true);
+		for (int i=1;i<=TOTLEVEL;i++)
+		{
+			CCUserDefault::sharedUserDefault()->setIntegerForKey(CCString::createWithFormat("star%d",i)->m_sString.c_str(),0);
+			CCUserDefault::sharedUserDefault()->setIntegerForKey(CCString::createWithFormat("highscore%d",i)->m_sString.c_str(),0);
+		}
+		
+	}
+
+}
+
 
 

@@ -28,6 +28,8 @@ public:
 	int GameType;
 	int GameTot;
 
+	int level;
+
 	int totScore;
 	int nowScore;
 	int targetScore;
