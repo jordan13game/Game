@@ -141,11 +141,7 @@ void SettingScene::touchReturn( cocos2d::CCObject* obj,cocos2d::extension::Touch
 {
 	if (type == TOUCH_EVENT_ENDED)
 	{
-		CCDirector::sharedDirector()->popScene();
-		SelectScene *pScene = SelectScene::create();
-		CCTransitionScene * reScene = NULL;
-		reScene = CCTransitionFadeBL::create(1.0f, pScene);
-		CCDirector::sharedDirector()->replaceScene(reScene);
+		keyBackClicked();
 	}
 }
 
@@ -153,4 +149,13 @@ void SettingScene::setLev( int num )
 {
 	UILabel* lab =  (UILabel*)pLayer->getWidgetByName("Panel")->getChildByName("num");
 	lab->setText(CCString::createWithFormat("%d",num)->m_sString.c_str());
+}
+
+void SettingScene::keyBackClicked()
+{
+	CCDirector::sharedDirector()->popScene();
+	SelectScene *pScene = SelectScene::create();
+	CCTransitionScene * reScene = NULL;
+	reScene = CCTransitionFadeBL::create(1.0f, pScene);
+	CCDirector::sharedDirector()->replaceScene(reScene);
 }

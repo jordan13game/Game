@@ -1,5 +1,6 @@
 #include "SelectScene.h"
 #include "GameScene.h"
+#include "StartScene.h"
 
 USING_NS_CC;
 USING_NS_CC_EXT;
@@ -25,7 +26,9 @@ bool SelectScene::init()
 		pScroll->addChild(getButton(i));
 	}
     
-	
+	UIButton *bt = (UIButton*)pLayer->getWidgetByName("return");
+	bt->setTouchEnabled(true);
+	bt->addTouchEventListener(this,toucheventselector(SelectScene::touchReturn));
 
     return true;
 }
@@ -75,4 +78,20 @@ void SelectScene::touchButton(CCObject* obj,TouchEventType type )
 		pScene->loadLevel(num);
 	}
 	
+}
+
+void SelectScene::keyBackClicked()
+{
+	StartScene *pScene = StartScene::create();
+	CCTransitionScene * reScene = NULL;
+	reScene = CCTransitionFadeBL::create(1.0f, pScene);
+	CCDirector::sharedDirector()->replaceScene(reScene);
+}
+
+void SelectScene::touchReturn( cocos2d::CCObject* obj,cocos2d::extension::TouchEventType type )
+{
+	if (type == TOUCH_EVENT_ENDED)
+	{
+		keyBackClicked();
+	}
 }

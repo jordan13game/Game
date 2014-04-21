@@ -21,5 +21,7 @@ public:
 	int level;
 
 	void touchButton(cocos2d::CCObject* obj,cocos2d::extension::TouchEventType type );
+
+	virtual void keyBackClicked();
 };
 

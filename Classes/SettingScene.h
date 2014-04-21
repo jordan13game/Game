@@ -20,5 +20,7 @@ public:
 	void setLev(int num);
     // implement the "static node()" method manually
     CREATE_FUNC(SettingScene);
+
+	virtual void keyBackClicked();
 };
 

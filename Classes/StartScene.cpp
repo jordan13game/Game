@@ -60,5 +60,11 @@ void StartScene::initUserInfo()
 
 }
 
+void StartScene::keyBackClicked()
+{
+	exit(0);
+}
+
+
 
 

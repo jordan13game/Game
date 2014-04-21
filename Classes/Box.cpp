@@ -219,6 +219,14 @@ void Box::addEffect( int type )
 		pSprite->addChild(getEffectWithRadio(90));
 		pSprite->addChild(getEffectWithRadio(270));
 	}
+	else if (type == COMBO_TYPE_SQR)
+	{
+		pSprite->addChild(getEffectWithRadio(0));
+		pSprite->addChild(getEffectWithRadio(180));
+		pSprite->addChild(getEffectWithRadio(90));
+		pSprite->addChild(getEffectWithRadio(270));
+	}
+	
 	pSprite->setZOrder(100);
 	
 }

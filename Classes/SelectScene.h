@@ -16,8 +16,11 @@ public:
 	cocos2d::extension::UIButton *getButton(int num);
 
 	void touchButton(cocos2d::CCObject* obj,cocos2d::extension::TouchEventType type);
+	void touchReturn(cocos2d::CCObject* obj,cocos2d::extension::TouchEventType type);
 
     // implement the "static node()" method manually
     CREATE_FUNC(SelectScene);
+
+	virtual void keyBackClicked();
 };
 

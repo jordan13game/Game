@@ -44,9 +44,14 @@ void GameScene::touchButton( CCObject* obj,TouchEventType type )
 {
 	if (type == TOUCH_EVENT_ENDED)
 	{
-		SettingScene *scene = SettingScene::create();
-		scene->setLev(level);
-		CCDirector::sharedDirector()->pushScene(scene);
+		keyBackClicked();
 	}
 	
+}
+
+void GameScene::keyBackClicked()
+{
+	SettingScene *scene = SettingScene::create();
+	scene->setLev(level);
+	CCDirector::sharedDirector()->pushScene(scene);
 }

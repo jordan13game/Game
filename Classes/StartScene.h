@@ -16,5 +16,7 @@ public:
     CREATE_FUNC(StartScene);
 
 	void initUserInfo();
+
+	virtual void keyBackClicked();
 };
 
