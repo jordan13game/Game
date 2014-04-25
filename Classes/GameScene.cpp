@@ -34,10 +34,25 @@ void GameScene::loadLevel( int num )
 	this->addChild(player,1,1);
 	CCSize tmp=player->getWidgetByName("Panel")->getSize();
 	player->setPosition(0,sz.height-tmp.height);
-	pPlayLayer->startGame(num);
+	
 	UIButton *bt = (UIButton *)player->getWidgetByName("Panel")->getChildByName("setting");
 	bt->setTouchEnabled(true);
 	bt->addTouchEventListener(this,toucheventselector(GameScene::touchButton));
+
+	UILayer *p = UILayer::create();
+	p->addWidget(CCUIHELPER->createWidgetFromJsonFile("Hint/Hint.ExportJson"));
+	ActionManager::shareManager()->playActionByName("Hint.ExportJson","Animation0");
+	this->runAction(CCSequence::createWithTwoActions(CCDelayTime::create(4),
+		CCCallFunc::create(this,callfunc_selector(GameScene::start))));
+	if ((num %2 ?GAMETYPE_STEP:GAMETYPE_TIME)==GAMETYPE_STEP)
+	{
+		p->getWidgetByName("step")->setVisible(true);
+	}
+	else
+	{
+		p->getWidgetByName("time")->setVisible(true);
+	}
+	this->addChild(p,100,6);
 }
 
 void GameScene::touchButton( CCObject* obj,TouchEventType type )
@@ -54,4 +69,10 @@ void GameScene::keyBackClicked()
 	SettingScene *scene = SettingScene::create();
 	scene->setLev(level);
 	CCDirector::sharedDirector()->pushScene(scene);
+}
+
+void GameScene::start()
+{
+	pPlayLayer->startGame(level);
+	this->removeChildByTag(6);
 }
