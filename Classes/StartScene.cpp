@@ -29,6 +29,11 @@ bool StartScene::init()
 	bt->setTouchEnabled(true);
 	bt->addTouchEventListener(this,toucheventselector(StartScene::touchStart));
 
+	SimpleAudioEngine::sharedEngine()->playBackgroundMusic("background.mp3",true);
+	SimpleAudioEngine::sharedEngine()->preloadEffect("bite.mp3");
+	SimpleAudioEngine::sharedEngine()->setBackgroundMusicVolume(0.5);
+	SimpleAudioEngine::sharedEngine()->setEffectsVolume(0.5);
+
 	initUserInfo();
 
     return true;
@@ -55,9 +60,23 @@ void StartScene::initUserInfo()
 			CCUserDefault::sharedUserDefault()->setIntegerForKey(CCString::createWithFormat("star%d",i)->m_sString.c_str(),0);
 			CCUserDefault::sharedUserDefault()->setIntegerForKey(CCString::createWithFormat("highscore%d",i)->m_sString.c_str(),0);
 		}
-		
+		CCUserDefault::sharedUserDefault()->setBoolForKey("Sound",true);
+		CCUserDefault::sharedUserDefault()->setBoolForKey("Effect",true);
 	}
+	else
+	{
+		if (!CCUserDefault::sharedUserDefault()->getBoolForKey("Sound"))
+		{
+			SimpleAudioEngine::sharedEngine()->pauseBackgroundMusic();
+		}
 
+
+		if (!CCUserDefault::sharedUserDefault()->getBoolForKey("Effect"))
+		{
+			SimpleAudioEngine::sharedEngine()->pauseAllEffects();
+		}
+
+	}
 }
 
 void StartScene::keyBackClicked()

@@ -2,11 +2,14 @@
 #include "Box.h"
 #include "GameScene.h"
 #include "SelectScene.h"
+#include "SimpleAudioEngine.h"
 
 
 USING_NS_CC;
 USING_NS_CC_EXT;
 using namespace std;
+using namespace CocosDenshion;
+
 
 
 
@@ -272,6 +275,12 @@ void PlayLayer::removeall()
 		
 	}
 	m_toRemove->removeAllObjects();
+	if (CCUserDefault::sharedUserDefault()->getBoolForKey("Effect"))
+	{
+		SimpleAudioEngine::sharedEngine()->playEffect("bite.mp3");
+	}
+	
+	
 }
 
 void PlayLayer::removeSprite( CCObject *p )

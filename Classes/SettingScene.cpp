@@ -43,10 +43,13 @@ bool SettingScene::init()
 	UIButton *bt = (UIButton *)pLayer->getWidgetByName("Panel")->getChildByName("music");
 	bt->setTouchEnabled(true);
 	bt->addTouchEventListener(this,toucheventselector(SettingScene::touchMusicButton));
-    
+    bt->setBright(CCUserDefault::sharedUserDefault()->getBoolForKey("Sound"));
+
+
 	bt = (UIButton *)pLayer->getWidgetByName("Panel")->getChildByName("soundeffect");
 	bt->setTouchEnabled(true);
 	bt->addTouchEventListener(this,toucheventselector(SettingScene::touchEffectButton));
+	bt->setBright(CCUserDefault::sharedUserDefault()->getBoolForKey("Effect"));
 
 	bt = (UIButton *)pLayer->getWidgetByName("Panel")->getChildByName("close");
 	bt->setTouchEnabled(true);
@@ -79,11 +82,14 @@ void SettingScene::touchMusicButton(CCObject* obj,TouchEventType type )
 		{
 			bt->setBright(false);
 			SimpleAudioEngine::sharedEngine()->stopBackgroundMusic();
+			CCUserDefault::sharedUserDefault()->setBoolForKey("Sound",false);
+			
 		}
 		else
 		{
 			bt->setBright(true);
 			SimpleAudioEngine::sharedEngine()->resumeBackgroundMusic();
+			CCUserDefault::sharedUserDefault()->setBoolForKey("Sound",true);
 		}
 		
 		
@@ -100,11 +106,13 @@ void SettingScene::touchEffectButton( cocos2d::CCObject* obj,cocos2d::extension:
 		{
 			bt->setBright(false);
 			SimpleAudioEngine::sharedEngine()->stopAllEffects();
+			CCUserDefault::sharedUserDefault()->setBoolForKey("Effect",false);
 		}
 		else
 		{
 			bt->setBright(true);
 			SimpleAudioEngine::sharedEngine()->resumeAllEffects();
+			CCUserDefault::sharedUserDefault()->setBoolForKey("Effect",true);
 		}
 
 
