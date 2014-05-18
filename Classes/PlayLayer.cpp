@@ -363,6 +363,16 @@ void PlayLayer::unlock()
 void PlayLayer::judgeAndRepair()
 {
 	int num = repair();
+	//getBoxAtPosXY(2,2)->_type=1;
+	//getBoxAtPosXY(2,2)->pSprite->setTexture(CCTextureCache::sharedTextureCache()->addImage(BOX_NAME[1]));
+	//getBoxAtPosXY(2,3)->_type=1;
+	//getBoxAtPosXY(2,3)->pSprite->setTexture(CCTextureCache::sharedTextureCache()->addImage(BOX_NAME[1]));
+	//getBoxAtPosXY(1,4)->_type=1;
+	//getBoxAtPosXY(1,4)->pSprite->setTexture(CCTextureCache::sharedTextureCache()->addImage(BOX_NAME[1]));
+	//getBoxAtPosXY(0,4)->_type=1;
+	//getBoxAtPosXY(0,4)->pSprite->setTexture(CCTextureCache::sharedTextureCache()->addImage(BOX_NAME[1]));
+	//getBoxAtPosXY(3,4)->_type=1;
+	//getBoxAtPosXY(3,4)->pSprite->setTexture(CCTextureCache::sharedTextureCache()->addImage(BOX_NAME[1]));
 	this->runAction(CCSequence::createWithTwoActions(CCDelayTime::create(num*BOXMOVETIME + 0.03f),
 		CCCallFunc::create(this,callfunc_selector(PlayLayer::unlock))));
 }
