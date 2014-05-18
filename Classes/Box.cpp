@@ -144,7 +144,8 @@ bool Box::check(Box *other,int dir)
 		{
 			pLayer->addToRemove(pLayer->getBoxAtPosXY(px,py-i));
 		}
-		combo_type = COMBO_TYPE_SQR;
+		addEffect(COMBO_TYPE_SQR);
+		removeable = true;
 		return true;
 	}
 	
