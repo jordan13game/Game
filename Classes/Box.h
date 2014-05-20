@@ -17,19 +17,19 @@ public:
     virtual bool init();  
 
 	int combo_type;//1代表横着 2代表竖着
-	CCSprite *pSprite;
-	int _type;
-	int x , y;
+	CCSprite *pSprite;//小球的图像
+	int _type;//小球类型
+	int x , y;//小球位置
     // implement the "static node()" method manually
     CREATE_FUNC(Box);
-	void swap(Box *a);
-	CCPoint getP();
-	bool check(Box *other = NULL,int dir = HORIZON);
+	void swap(Box *a);//交换小球
+	CCPoint getP();//获取小球位置
+	bool check(Box *other = NULL,int dir = HORIZON);//检查是否可消
 
-	bool removeable;
+	bool removeable;//是否在本轮消除
 
-	CCParticleMeteor *getEffectWithRadio(float radio);
+	CCParticleMeteor *getEffectWithRadio(float radio);//生成粒子特效
 
-	void addEffect(int type);
+	void addEffect(int type);//添加粒子特效
 };
 

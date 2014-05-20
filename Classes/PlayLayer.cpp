@@ -55,18 +55,6 @@ bool PlayLayer::init()
 
 
 
-bool PlayLayer::checkBox()
-{
-	for (int i = 0 ;i < GRID_HEIGHT ;i ++)
-	{
-		for (int j = 0; j < GRID_WIDTH ; j++)
-		{
-			CCArray *tmp = CCArray::create();
-		}
-
-	}
-	return true;
-}
 
 PlayLayer::~PlayLayer()
 {
