@@ -49,7 +49,6 @@ bool PlayLayer::init()
 	totScore = 0;
 	nowScore = 0;
 
-
     return true;
 }
 

@@ -3,7 +3,7 @@
 #include "cocos2d.h"
 #include "cocos-ext.h"
 
-class SelectScene : public cocos2d::CCScene
+class SelectScene : public cocos2d::CCScene,public cocos2d::CCKeypadDelegate
 {
 public:
     // Here's a difference. Method 'init' in cocos2d-x returns bool, instead of returning 'id' in cocos2d-iphone
