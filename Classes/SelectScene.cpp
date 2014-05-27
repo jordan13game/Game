@@ -29,7 +29,7 @@ bool SelectScene::init()
 	UIButton *bt = (UIButton*)pLayer->getWidgetByName("return");
 	bt->setTouchEnabled(true);
 	bt->addTouchEventListener(this,toucheventselector(SelectScene::touchReturn));
-
+	CCDirector::sharedDirector()->getKeypadDispatcher()->addDelegate(this);
     return true;
 }
 
@@ -76,16 +76,21 @@ void SelectScene::touchButton(CCObject* obj,TouchEventType type )
 		reScene = CCTransitionFadeBL::create(1.0f, pScene);
 		CCDirector::sharedDirector()->replaceScene(reScene);
 		pScene->loadLevel(num);
+		//CCDirector::sharedDirector()->getKeypadDispatcher()->removeDelegate(this);
 	}
 	
 }
 
 void SelectScene::keyBackClicked()
 {
-	StartScene *pScene = StartScene::create();
-	CCTransitionScene * reScene = NULL;
-	reScene = CCTransitionFadeBL::create(1.0f, pScene);
-	CCDirector::sharedDirector()->replaceScene(reScene);
+	if (CCDirector::sharedDirector()->getRunningScene()->isEqual(this))
+	{
+		StartScene *pScene = StartScene::create();
+		CCTransitionScene * reScene = NULL;
+		reScene = CCTransitionFadeBL::create(1.0f, pScene);
+		CCDirector::sharedDirector()->replaceScene(reScene);
+		//CCDirector::sharedDirector()->getKeypadDispatcher()->removeDelegate(this);
+	}
 }
 
 void SelectScene::touchReturn( cocos2d::CCObject* obj,cocos2d::extension::TouchEventType type )

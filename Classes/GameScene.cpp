@@ -22,6 +22,7 @@ bool GameScene::init()
 	this->addChild(pPlayLayer);
     this->setTag(30);
 
+	CCDirector::sharedDirector()->getKeypadDispatcher()->addDelegate(this);
     return true;
 }
 
@@ -66,9 +67,14 @@ void GameScene::touchButton( CCObject* obj,TouchEventType type )
 
 void GameScene::keyBackClicked()
 {
-	SettingScene *scene = SettingScene::create();
-	scene->setLev(level);
-	CCDirector::sharedDirector()->pushScene(scene);
+	if (CCDirector::sharedDirector()->getRunningScene()->isEqual(this))
+	{
+		SettingScene *scene = SettingScene::create();
+		scene->setLev(level);
+		CCDirector::sharedDirector()->pushScene(scene);
+		//CCDirector::sharedDirector()->getKeypadDispatcher()->removeDelegate(this);
+	}
+	
 }
 
 void GameScene::start()

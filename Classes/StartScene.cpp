@@ -35,7 +35,7 @@ bool StartScene::init()
 	SimpleAudioEngine::sharedEngine()->setEffectsVolume(0.5);
 
 	initUserInfo();
-
+	CCDirector::sharedDirector()->getKeypadDispatcher()->addDelegate(this);
     return true;
 }
 
@@ -47,6 +47,7 @@ void StartScene::touchStart( cocos2d::CCObject* obj,cocos2d::extension::TouchEve
 		CCTransitionScene * reScene = NULL;
 		reScene = CCTransitionFadeBL::create(1.0f, pScene);
 		CCDirector::sharedDirector()->replaceScene(reScene);
+		//CCDirector::sharedDirector()->getKeypadDispatcher()->removeDelegate(this);
 	}
 }
 
@@ -81,7 +82,10 @@ void StartScene::initUserInfo()
 
 void StartScene::keyBackClicked()
 {
-	exit(0);
+	if (CCDirector::sharedDirector()->getRunningScene()->isEqual(this))
+	{
+		exit(0);
+	}
 }
 
 

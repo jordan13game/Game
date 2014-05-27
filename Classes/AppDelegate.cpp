@@ -56,5 +56,8 @@ void AppDelegate::applicationWillEnterForeground() {
     CCDirector::sharedDirector()->startAnimation();
 
     // if you use SimpleAudioEngine, it must resume here
-     SimpleAudioEngine::sharedEngine()->resumeBackgroundMusic();
+	if (CCUserDefault::sharedUserDefault()->getBoolForKey("Sound"))
+	{
+		SimpleAudioEngine::sharedEngine()->resumeBackgroundMusic();
+	}
 }

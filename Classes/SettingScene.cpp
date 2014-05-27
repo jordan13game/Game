@@ -66,7 +66,7 @@ bool SettingScene::init()
 	bt = (UIButton *)pLayer->getWidgetByName("Panel")->getChildByName("restart");
 	bt->setTouchEnabled(true);
 	bt->addTouchEventListener(this,toucheventselector(SettingScene::touchRestart));
-
+	CCDirector::sharedDirector()->getKeypadDispatcher()->addDelegate(this);
     return true;
 }
 
@@ -123,8 +123,7 @@ void SettingScene::touchClose( cocos2d::CCObject* obj,cocos2d::extension::TouchE
 {
 	if (type == TOUCH_EVENT_ENDED)
 	{
-		CCDirector::sharedDirector()->popScene();
-
+		keyBackClicked();
 	}
 }
 
@@ -141,7 +140,7 @@ void SettingScene::touchRestart( cocos2d::CCObject* obj,cocos2d::extension::Touc
 		reScene = CCTransitionFadeBL::create(1.0f, pScene);
 		CCDirector::sharedDirector()->replaceScene(reScene);
 		pScene->loadLevel(num);
-
+		//CCDirector::sharedDirector()->getKeypadDispatcher()->removeDelegate(this);
 	}
 }
 
@@ -149,7 +148,12 @@ void SettingScene::touchReturn( cocos2d::CCObject* obj,cocos2d::extension::Touch
 {
 	if (type == TOUCH_EVENT_ENDED)
 	{
-		keyBackClicked();
+		CCDirector::sharedDirector()->popScene();
+		SelectScene *pScene = SelectScene::create();
+		CCTransitionScene * reScene = NULL;
+		reScene = CCTransitionFadeBL::create(1.0f, pScene);
+		CCDirector::sharedDirector()->replaceScene(reScene);
+		//CCDirector::sharedDirector()->getKeypadDispatcher()->removeDelegate(this);
 	}
 }
 
@@ -161,9 +165,12 @@ void SettingScene::setLev( int num )
 
 void SettingScene::keyBackClicked()
 {
-	CCDirector::sharedDirector()->popScene();
-	SelectScene *pScene = SelectScene::create();
-	CCTransitionScene * reScene = NULL;
-	reScene = CCTransitionFadeBL::create(1.0f, pScene);
-	CCDirector::sharedDirector()->replaceScene(reScene);
+	if (CCDirector::sharedDirector()->getRunningScene()->isEqual(this))
+	{
+		CCDirector::sharedDirector()->popScene();
+	}
+	//CCDirector::sharedDirector()->popScene();
+	//CCDirector::sharedDirector()->getKeypadDispatcher()->removeDelegate(this);
+	//GameScene *p = (GameScene *)CCDirector::sharedDirector()->getRunningScene();
+	//CCDirector::sharedDirector()->getKeypadDispatcher()->addDelegate(p);
 }
